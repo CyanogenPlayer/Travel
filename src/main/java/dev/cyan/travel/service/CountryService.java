@@ -26,12 +26,8 @@ public class CountryService {
         return countryRepository.insert(new Country(name));
     }
 
-    public Optional<Country> updateCountry(ObjectId id, Country updatedCountry) {
-        return countryRepository.findById(id)
-                .map(existingCountry -> {
-                    existingCountry.setName(updatedCountry.getName());
-                    return countryRepository.save(existingCountry);
-                });
+    public Country saveCountry(Country updatedCountry) {
+        return countryRepository.save(updatedCountry);
     }
 
     public void deleteCountry(ObjectId id) {
