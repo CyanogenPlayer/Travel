@@ -1,5 +1,6 @@
 package dev.cyan.travel.service;
 
+import dev.cyan.travel.entity.Country;
 import dev.cyan.travel.entity.Hotel;
 import dev.cyan.travel.repository.CountryRepository;
 import dev.cyan.travel.repository.HotelRepository;
@@ -14,8 +15,6 @@ import java.util.Optional;
 public class HotelService {
     @Autowired
     private HotelRepository hotelRepository;
-    @Autowired
-    private CountryRepository countryRepository;
 
     public List<Hotel> allHotels() {
         return hotelRepository.findAll();
@@ -25,17 +24,12 @@ public class HotelService {
         return hotelRepository.findById(id);
     }
 
-    public Hotel createHotel(String name, ObjectId countryId) {
-        return hotelRepository.insert(new Hotel(name, countryRepository.findById(countryId).get()));
+    public Hotel createHotel(String name, Country country) {
+        return hotelRepository.insert(new Hotel(name, country));
     }
 
-    public Optional<Hotel> updateHotel(ObjectId id, Hotel updatedHotel) {
-        return hotelRepository.findById(id)
-                .map(existingHotel -> {
-                    existingHotel.setName(updatedHotel.getName());
-                    existingHotel.setCountry(countryRepository.findByName(updatedHotel.getCountry().getName()).get());
-                    return hotelRepository.save(existingHotel);
-                });
+    public Hotel saveHotel(Hotel updatedHotel) {
+        return hotelRepository.save(updatedHotel);
     }
 
     public void deleteHotel(ObjectId id) {
