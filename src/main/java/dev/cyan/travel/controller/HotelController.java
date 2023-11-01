@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,15 +44,15 @@ public class HotelController {
     }
 
     @PostMapping
-    public ResponseEntity<HotelDTO> createHotel(@RequestBody Map<String, String> payload) {
-        Optional<Country> country = countryService.singleCountry(new ObjectId(payload.get("countryId")));
+    public ResponseEntity<HotelDTO> createHotel(@RequestBody HotelDTO hotelDTO) {
+        Optional<Country> country = countryService.singleCountry(new ObjectId(hotelDTO.getCountryId()));
         if (country.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Hotel hotel = hotelService.createHotel(payload.get("name"), country.get());
-        HotelDTO hotelDTO = convertToDTO(hotel);
-        return new ResponseEntity<>(hotelDTO, HttpStatus.CREATED);
+        Hotel createdHotel = hotelService.createHotel(hotelDTO.getName(), country.get());
+        HotelDTO createdHotelDTO = convertToDTO(createdHotel);
+        return new ResponseEntity<>(createdHotelDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
