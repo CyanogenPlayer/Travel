@@ -21,10 +21,6 @@ public class CountryService {
         return countryRepository.findById(id);
     }
 
-    public Optional<Country> getCountryByName(String name) {
-        return countryRepository.findCountryByName(name);
-    }
-
     public Country createCountry(String name) {
         return countryRepository.insert(new Country(name));
     }
