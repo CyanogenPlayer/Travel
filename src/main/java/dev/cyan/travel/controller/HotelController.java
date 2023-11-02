@@ -42,12 +42,12 @@ public class HotelController {
 
     @PostMapping
     public ResponseEntity<HotelDTO> createHotel(@RequestBody HotelDTO hotelDTO) {
-        Optional<Country> country = countryService.getCountry(new ObjectId(hotelDTO.getCountryId()));
+        Optional<Country> country = countryService.getCountry(hotelDTO.getCountryId());
         if (country.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Hotel createdHotel = hotelService.createHotel(hotelDTO.getName(), country.get().getId());
+        Hotel createdHotel = hotelService.createHotel(hotelDTO.getName(), country.get());
         return new ResponseEntity<>(DTOConverter.convertHotelToDTO(createdHotel), HttpStatus.CREATED);
     }
 
@@ -58,13 +58,13 @@ public class HotelController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Optional<Country> country = countryService.getCountry(new ObjectId(hotelDTO.getCountryId()));
+        Optional<Country> country = countryService.getCountry(hotelDTO.getCountryId());
         if (country.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         existingHotel.get().setName(hotelDTO.getName());
-        existingHotel.get().setCountryId(country.get().getId());
+        existingHotel.get().setCountry(country.get());
 
         Hotel updatedHotel = hotelService.saveHotel(existingHotel.get());
         return new ResponseEntity<>(DTOConverter.convertHotelToDTO(updatedHotel), HttpStatus.OK);

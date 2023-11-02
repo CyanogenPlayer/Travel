@@ -2,7 +2,6 @@ package dev.cyan.travel.service;
 
 import dev.cyan.travel.entity.Country;
 import dev.cyan.travel.repository.CountryRepository;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,7 @@ public class CountryService {
         return countryRepository.findAll();
     }
 
-    public Optional<Country> getCountry(ObjectId id) {
+    public Optional<Country> getCountry(String id) {
         return countryRepository.findById(id);
     }
 
@@ -34,7 +33,7 @@ public class CountryService {
         return countryRepository.save(updatedCountry);
     }
 
-    public void deleteCountry(ObjectId id) {
+    public void deleteCountry(String id) {
         countryRepository.deleteById(id);
     }
 }

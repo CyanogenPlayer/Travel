@@ -1,5 +1,6 @@
 package dev.cyan.travel.service;
 
+import dev.cyan.travel.entity.Country;
 import dev.cyan.travel.entity.Hotel;
 import dev.cyan.travel.repository.HotelRepository;
 import org.bson.types.ObjectId;
@@ -26,8 +27,8 @@ public class HotelService {
         return hotelRepository.findHotelsByCountryId(id);
     }
 
-    public Hotel createHotel(String name, String countryId) {
-        return hotelRepository.insert(new Hotel(name, countryId));
+    public Hotel createHotel(String name, Country country) {
+        return hotelRepository.insert(new Hotel(name, country));
     }
 
     public Hotel saveHotel(Hotel updatedHotel) {

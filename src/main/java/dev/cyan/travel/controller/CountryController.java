@@ -1,19 +1,16 @@
 package dev.cyan.travel.controller;
 
-import dev.cyan.travel.DTO.CountryDTO;
-import dev.cyan.travel.converter.DTOConverter;
 import dev.cyan.travel.DTO.HotelDTO;
+import dev.cyan.travel.converter.DTOConverter;
 import dev.cyan.travel.entity.Country;
 import dev.cyan.travel.entity.Hotel;
 import dev.cyan.travel.service.CountryService;
 import dev.cyan.travel.service.HotelService;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,45 +24,19 @@ public class CountryController {
     private HotelService hotelService;
 
     @GetMapping
-    public ResponseEntity<List<CountryDTO>> getCountries(
-            @RequestParam(name = "id", required = false) ObjectId id,
-            @RequestParam(name = "name", required = false) String name) {
-        if (id != null) {
-            return getCountryResponse(Collections.singletonList(countryService.getCountry(id)
-                    .map(DTOConverter::convertCountryToDTO)
-                    .orElse(null)));
-        }
-
-        if (name != null) {
-            return getCountryResponse(Collections.singletonList(countryService.getCountryByName(name)
-                    .map(DTOConverter::convertCountryToDTO)
-                    .orElse(null)));
-        }
-
-        return getAllCountries();
-    }
-
-    private ResponseEntity<List<CountryDTO>> getCountryResponse(List<CountryDTO> countryDTOs) {
-        return new ResponseEntity<>(countryDTOs, HttpStatus.OK);
-    }
-
-    private ResponseEntity<List<CountryDTO>> getAllCountries() {
-        List<Country> countries = countryService.getCountries();
-        List<CountryDTO> countryDTOs = countries.stream()
-                .map(DTOConverter::convertCountryToDTO)
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(countryDTOs, HttpStatus.OK);
+    public ResponseEntity<List<Country>> getCountries() {
+        return new ResponseEntity<>(countryService.getCountries(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CountryDTO> getCountry(@PathVariable ObjectId id) {
+    public ResponseEntity<Country> getCountry(@PathVariable String id) {
         Optional<Country> country = countryService.getCountry(id);
-        return country.map(value -> new ResponseEntity<>(DTOConverter.convertCountryToDTO(value), HttpStatus.OK)).orElseGet(() ->
+        return country.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() ->
                 new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/{id}/hotels")
-    public ResponseEntity<List<HotelDTO>> getHotelsInCountry(@PathVariable ObjectId id) {
+    public ResponseEntity<List<HotelDTO>> getHotelsInCountry(@PathVariable String id) {
         Optional<Country> country = countryService.getCountry(id);
         if (country.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -79,26 +50,24 @@ public class CountryController {
     }
 
     @PostMapping
-    public ResponseEntity<CountryDTO> createCountry(@RequestBody CountryDTO countryDTO) {
-        Country createdCountry = countryService.createCountry(countryDTO.getName());
-        return new ResponseEntity<>(DTOConverter.convertCountryToDTO(createdCountry), HttpStatus.CREATED);
+    public ResponseEntity<Country> createCountry(@RequestBody Country country) {
+        return new ResponseEntity<>(countryService.createCountry(country.getName()), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CountryDTO> updateCountry(@PathVariable ObjectId id, @RequestBody CountryDTO countryDTO) {
+    public ResponseEntity<Country> updateCountry(@PathVariable String id, @RequestBody Country country) {
         Optional<Country> existingCountry = countryService.getCountry(id);
         if (existingCountry.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        existingCountry.get().setName(countryDTO.getName());
+        existingCountry.get().setName(country.getName());
 
-        Country updatedCountry = countryService.saveCountry(existingCountry.get());
-        return new ResponseEntity<>(DTOConverter.convertCountryToDTO(updatedCountry), HttpStatus.OK);
+        return new ResponseEntity<>(countryService.saveCountry(existingCountry.get()), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCountry(@PathVariable ObjectId id) {
+    public ResponseEntity<Void> deleteCountry(@PathVariable String id) {
         Optional<Country> country = countryService.getCountry(id);
         if (country.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
