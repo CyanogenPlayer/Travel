@@ -1,6 +1,7 @@
 package dev.cyan.travel.controller;
 
 import dev.cyan.travel.DTO.RoomDTO;
+import dev.cyan.travel.converter.DTOConverter;
 import dev.cyan.travel.entity.Hotel;
 import dev.cyan.travel.entity.Room;
 import dev.cyan.travel.service.HotelService;
@@ -24,45 +25,45 @@ public class RoomController {
     private HotelService hotelService;
 
     @GetMapping
-    public ResponseEntity<List<RoomDTO>> getAllRooms() {
-        List<Room> rooms = roomService.allRooms();
+    public ResponseEntity<List<RoomDTO>> getRooms() {
+        List<Room> rooms = roomService.getRooms();
         List<RoomDTO> roomDTOs = rooms.stream()
-                .map(this::convertToDTO)
+                .map(DTOConverter::convertRoomToDTO)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(roomDTOs, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoomDTO> getSingleRoom(@PathVariable ObjectId id) {
-        Optional<Room> room = roomService.singleRoom(id);
+    public ResponseEntity<RoomDTO> getRoom(@PathVariable ObjectId id) {
+        Optional<Room> room = roomService.getRoom(id);
         if (room.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        RoomDTO roomDTO = convertToDTO(room.get());
+        RoomDTO roomDTO = DTOConverter.convertRoomToDTO(room.get());
         return new ResponseEntity<>(roomDTO, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<RoomDTO> createRoom(@RequestBody RoomDTO roomDTO) {
-        Optional<Hotel> hotel = hotelService.singleHotel(new ObjectId(roomDTO.getHotelId()));
+        Optional<Hotel> hotel = hotelService.getHotel(new ObjectId(roomDTO.getHotelId()));
         if (hotel.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         Room createdRoom = roomService.createRoom(roomDTO.getRoomNumber(), roomDTO.getCapacity(), hotel.get());
-        RoomDTO createdRoomDTO = convertToDTO(createdRoom);
+        RoomDTO createdRoomDTO = DTOConverter.convertRoomToDTO(createdRoom);
         return new ResponseEntity<>(createdRoomDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<RoomDTO> updateRoom(@PathVariable ObjectId id, @RequestBody RoomDTO roomDTO) {
-        Optional<Room> existingRoom = roomService.singleRoom(id);
+        Optional<Room> existingRoom = roomService.getRoom(id);
         if (existingRoom.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Optional<Hotel> hotel = hotelService.singleHotel(new ObjectId(roomDTO.getHotelId()));
+        Optional<Hotel> hotel = hotelService.getHotel(new ObjectId(roomDTO.getHotelId()));
         if (hotel.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -72,22 +73,18 @@ public class RoomController {
         existingRoom.get().setHotel(hotel.get());
 
         Room upadtedRoom = roomService.saveRoom(existingRoom.get());
-        RoomDTO upadtedRoomDTO = convertToDTO(upadtedRoom);
+        RoomDTO upadtedRoomDTO = DTOConverter.convertRoomToDTO(upadtedRoom);
         return new ResponseEntity<>(upadtedRoomDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Room> deleteRoom(@PathVariable ObjectId id) {
-        Optional<Room> room = roomService.singleRoom(id);
+    public ResponseEntity<Void> deleteRoom(@PathVariable ObjectId id) {
+        Optional<Room> room = roomService.getRoom(id);
         if (room.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         roomService.deleteRoom(id);
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    private RoomDTO convertToDTO(Room room) {
-        return new RoomDTO(room.getId(), room.getRoomNumber(), room.getCapacity(), room.getHotel().getId());
     }
 }

@@ -2,7 +2,6 @@ package dev.cyan.travel.service;
 
 import dev.cyan.travel.entity.Hotel;
 import dev.cyan.travel.entity.Room;
-import dev.cyan.travel.repository.HotelRepository;
 import dev.cyan.travel.repository.RoomRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +15,11 @@ public class RoomService {
     @Autowired
     private RoomRepository roomRepository;
 
-    public List<Room> allRooms() {
+    public List<Room> getRooms() {
         return roomRepository.findAll();
     }
 
-    public Optional<Room> singleRoom(ObjectId id) {
+    public Optional<Room> getRoom(ObjectId id) {
         return roomRepository.findById(id);
     }
 

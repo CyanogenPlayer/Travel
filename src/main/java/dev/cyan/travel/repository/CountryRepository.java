@@ -9,4 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface CountryRepository extends MongoRepository<Country, ObjectId> {
+    Optional<Country> findCountryByName(String name);
 }

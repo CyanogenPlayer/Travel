@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 @Document(collection = "hotels")
 @Data
@@ -15,11 +14,10 @@ public class Hotel {
     @Id
     private String id;
     private String name;
-    @DocumentReference
-    private Country country;
+    private String countryId;
 
-    public Hotel(String name, Country country) {
+    public Hotel(String name, String countryId) {
         this.name = name;
-        this.country = country;
+        this.countryId = countryId;
     }
 }

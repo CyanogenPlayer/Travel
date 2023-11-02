@@ -14,12 +14,16 @@ public class CountryService {
     @Autowired
     private CountryRepository countryRepository;
 
-    public List<Country> allCountries() {
+    public List<Country> getCountries() {
         return countryRepository.findAll();
     }
 
-    public Optional<Country> singleCountry(ObjectId id) {
+    public Optional<Country> getCountry(ObjectId id) {
         return countryRepository.findById(id);
+    }
+
+    public Optional<Country> getCountryByName(String name) {
+        return countryRepository.findCountryByName(name);
     }
 
     public Country createCountry(String name) {

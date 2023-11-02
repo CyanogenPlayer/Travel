@@ -1,6 +1,7 @@
 package dev.cyan.travel.controller;
 
 import dev.cyan.travel.DTO.HotelDTO;
+import dev.cyan.travel.converter.DTOConverter;
 import dev.cyan.travel.entity.Country;
 import dev.cyan.travel.entity.Hotel;
 import dev.cyan.travel.service.CountryService;
@@ -24,69 +25,59 @@ public class HotelController {
     private CountryService countryService;
 
     @GetMapping
-    public ResponseEntity<List<HotelDTO>> getAllHotels() {
-        List<Hotel> hotels = hotelService.allHotels();
+    public ResponseEntity<List<HotelDTO>> getHotels() {
+        List<Hotel> hotels = hotelService.getHotels();
         List<HotelDTO> hotelDTOs = hotels.stream()
-                .map(this::convertToDTO)
+                .map(DTOConverter::convertHotelToDTO)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(hotelDTOs, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<HotelDTO> getSingleHotel(@PathVariable ObjectId id) {
-        Optional<Hotel> hotel = hotelService.singleHotel(id);
-        if (hotel.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        HotelDTO hotelDTO = convertToDTO(hotel.get());
-        return new ResponseEntity<>(hotelDTO, HttpStatus.OK);
+    public ResponseEntity<HotelDTO> getHotel(@PathVariable ObjectId id) {
+        Optional<Hotel> hotel = hotelService.getHotel(id);
+        return hotel.map(value -> new ResponseEntity<>(DTOConverter.convertHotelToDTO(value), HttpStatus.OK)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
     public ResponseEntity<HotelDTO> createHotel(@RequestBody HotelDTO hotelDTO) {
-        Optional<Country> country = countryService.singleCountry(new ObjectId(hotelDTO.getCountryId()));
+        Optional<Country> country = countryService.getCountry(new ObjectId(hotelDTO.getCountryId()));
         if (country.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Hotel createdHotel = hotelService.createHotel(hotelDTO.getName(), country.get());
-        HotelDTO createdHotelDTO = convertToDTO(createdHotel);
-        return new ResponseEntity<>(createdHotelDTO, HttpStatus.CREATED);
+        Hotel createdHotel = hotelService.createHotel(hotelDTO.getName(), country.get().getId());
+        return new ResponseEntity<>(DTOConverter.convertHotelToDTO(createdHotel), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<HotelDTO> updateHotel(@PathVariable ObjectId id, @RequestBody HotelDTO hotelDTO) {
-        Optional<Hotel> existingHotel = hotelService.singleHotel(id);
+        Optional<Hotel> existingHotel = hotelService.getHotel(id);
         if (existingHotel.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Optional<Country> country = countryService.singleCountry(new ObjectId(hotelDTO.getCountryId()));
+        Optional<Country> country = countryService.getCountry(new ObjectId(hotelDTO.getCountryId()));
         if (country.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         existingHotel.get().setName(hotelDTO.getName());
-        existingHotel.get().setCountry(country.get());
+        existingHotel.get().setCountryId(country.get().getId());
 
         Hotel updatedHotel = hotelService.saveHotel(existingHotel.get());
-        HotelDTO updatedHotelDTO = convertToDTO(updatedHotel);
-        return new ResponseEntity<>(updatedHotelDTO, HttpStatus.OK);
+        return new ResponseEntity<>(DTOConverter.convertHotelToDTO(updatedHotel), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteHotel(@PathVariable ObjectId id) {
-        Optional<Hotel> hotel = hotelService.singleHotel(id);
+        Optional<Hotel> hotel = hotelService.getHotel(id);
         if (hotel.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         hotelService.deleteHotel(id);
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    private HotelDTO convertToDTO(Hotel hotel) {
-        return new HotelDTO(hotel.getId(), hotel.getName(), hotel.getCountry().getId());
     }
 }
