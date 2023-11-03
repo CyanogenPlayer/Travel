@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class HotelDTO {
+public class CountryDTO {
     private String id;
     private String name;
-    private String countryId;
 }
