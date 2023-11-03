@@ -31,8 +31,8 @@ public class CountryController {
     @GetMapping("/{id}")
     public ResponseEntity<Country> getCountry(@PathVariable String id) {
         Optional<Country> country = countryService.getCountry(id);
-        return country.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() ->
-                new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return country.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/{id}/hotels")

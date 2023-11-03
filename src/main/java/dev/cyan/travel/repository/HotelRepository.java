@@ -10,5 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface HotelRepository extends MongoRepository<Hotel, ObjectId> {
+    Optional<Hotel> findById(String id);
     List<Hotel> findHotelsByCountryId(String countryId);
+    void deleteById(String id);
 }

@@ -19,7 +19,7 @@ public class HotelService {
         return hotelRepository.findAll();
     }
 
-    public Optional<Hotel> getHotel(ObjectId id) {
+    public Optional<Hotel> getHotel(String id) {
         return hotelRepository.findById(id);
     }
 
@@ -35,7 +35,7 @@ public class HotelService {
         return hotelRepository.save(updatedHotel);
     }
 
-    public void deleteHotel(ObjectId id) {
+    public void deleteHotel(String id) {
         hotelRepository.deleteById(id);
     }
 }
