@@ -3,7 +3,6 @@ package dev.cyan.travel.service;
 import dev.cyan.travel.entity.Hotel;
 import dev.cyan.travel.entity.Room;
 import dev.cyan.travel.repository.RoomRepository;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

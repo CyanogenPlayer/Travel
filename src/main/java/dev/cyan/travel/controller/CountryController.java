@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class CountryController {
     public ResponseEntity<List<HotelDTO>> getHotelsInCountry(@PathVariable String id) {
         Optional<Country> country = countryService.getCountry(id);
         if (country.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.NOT_FOUND);
         }
 
         List<Hotel> hotels = hotelService.getHotelsByCountryId(country.get().getId());

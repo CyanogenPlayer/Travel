@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,7 +39,7 @@ public class RoomController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    // @GetMapping("/{id}/bookings") will be added later
+    //TODO @GetMapping("/{id}/bookings") write method, when bookings will be ready
 
     @PostMapping
     public ResponseEntity<RoomDTO> createRoom(@RequestBody RoomDTO roomDTO) {
