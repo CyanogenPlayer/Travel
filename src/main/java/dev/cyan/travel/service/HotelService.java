@@ -15,12 +15,16 @@ public class HotelService {
     @Autowired
     private HotelRepository hotelRepository;
 
-    public List<Hotel> allHotels() {
+    public List<Hotel> getHotels() {
         return hotelRepository.findAll();
     }
 
-    public Optional<Hotel> singleHotel(ObjectId id) {
+    public Optional<Hotel> getHotel(String id) {
         return hotelRepository.findById(id);
+    }
+
+    public List<Hotel> getHotelsByCountryId(String id) {
+        return hotelRepository.findHotelsByCountryId(id);
     }
 
     public Hotel createHotel(String name, Country country) {
@@ -31,7 +35,7 @@ public class HotelService {
         return hotelRepository.save(updatedHotel);
     }
 
-    public void deleteHotel(ObjectId id) {
+    public void deleteHotel(String id) {
         hotelRepository.deleteById(id);
     }
 }
